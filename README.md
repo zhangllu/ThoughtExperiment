@@ -82,6 +82,9 @@
 - [CHANGELOG.md](./CHANGELOG.md) — 项目迭代记录
 - [EXPERIMENTS/](./EXPERIMENTS/) — 思想实验库
 - [CASES/](./CASES/) — 案例与活动记录
+  - [example-case.md](./CASES/example-case.md) — 案例卡示例
+  - [first-activity-without-me.md](./CASES/first-activity-without-me.md) — 首期活动：如果没有我，会怎样？
+  - [思想实验活动PPT-如果没有我会怎样.html](./CASES/思想实验活动PPT-如果没有我会怎样.html) — 首期活动完整主持流程
 - [TEMPLATES/](./TEMPLATES/) — 模板文档
 - [MEETINGS/](./MEETINGS/) — 活动记录
 - [LOGS/](./LOGS/) — 行动实验日志
