@@ -1,0 +1,958 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>如果没有我，会怎样？从自我中心理解到全局式理解</title>
+  <style>
+    :root {
+      --ink: #202733;
+      --muted: #657383;
+      --line: #d8e0e7;
+      --paper: #f7fafc;
+      --panel: #ffffff;
+      --bad: #873f49;
+      --bad-bg: #f7e6e8;
+      --good: #126b62;
+      --good-bg: #e3f4f0;
+      --blue: #245c9c;
+      --blue-bg: #e7f0fb;
+      --amber: #8a5b10;
+      --amber-bg: #fff3d8;
+      --shadow: 0 18px 50px rgba(32, 39, 51, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: linear-gradient(180deg, #edf3f7 0%, #f8fafc 52%, #eef6f3 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Microsoft YaHei", sans-serif;
+    }
+
+    .deck {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 22px;
+      border-bottom: 1px solid rgba(32, 39, 51, 0.1);
+      background: rgba(255, 255, 255, 0.84);
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .brand strong {
+      font-size: 15px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      min-width: 42px;
+    }
+
+    button:hover { border-color: #9db3c8; }
+    button:disabled { opacity: 0.42; cursor: not-allowed; }
+
+    .counter {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      font-size: 13px;
+      min-width: 58px;
+      text-align: center;
+    }
+
+    main {
+      display: grid;
+      place-items: center;
+      padding: 26px;
+    }
+
+    .slide {
+      display: none;
+      width: min(1180px, 100%);
+      min-height: min(690px, calc(100vh - 150px));
+      background: var(--panel);
+      border: 1px solid rgba(32, 39, 51, 0.12);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: clamp(28px, 4vw, 56px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .slide::before {
+      content: attr(data-step);
+      position: absolute;
+      right: 28px;
+      top: 22px;
+      color: rgba(32, 39, 51, 0.24);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      font-size: clamp(40px, 6.1vw, 76px);
+      line-height: 1.08;
+      letter-spacing: 0;
+      max-width: 960px;
+    }
+
+    h2 {
+      font-size: clamp(30px, 4.1vw, 52px);
+      line-height: 1.14;
+      letter-spacing: 0;
+      max-width: 1000px;
+    }
+
+    h3 {
+      font-size: clamp(20px, 2.15vw, 28px);
+      line-height: 1.26;
+    }
+
+    p, li {
+      font-size: clamp(18px, 1.9vw, 24px);
+      line-height: 1.55;
+    }
+
+    .lead {
+      color: var(--muted);
+      font-size: clamp(20px, 2.4vw, 30px);
+      max-width: 920px;
+    }
+
+    .kicker {
+      color: var(--blue);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .thirds {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+      background: #fff;
+    }
+
+    .panel.bad { border-color: #e4b8bd; background: var(--bad-bg); }
+    .panel.good { border-color: #a4d8ce; background: var(--good-bg); }
+    .panel.blue { border-color: #b7cdea; background: var(--blue-bg); }
+    .panel.amber { border-color: #f0d79d; background: var(--amber-bg); }
+
+    .panel h3 { margin-bottom: 12px; }
+    .panel.bad h3 { color: var(--bad); }
+    .panel.good h3 { color: var(--good); }
+    .panel.blue h3 { color: var(--blue); }
+    .panel.amber h3 { color: var(--amber); }
+
+    .mini-diagram {
+      display: block;
+      width: 100%;
+      height: 142px;
+      margin-top: 16px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.52);
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 1.2em;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 14px;
+      background: #fff;
+      color: var(--ink);
+      font-size: clamp(16px, 1.55vw, 20px);
+    }
+
+    .quote {
+      border-left: 5px solid var(--blue);
+      padding-left: 18px;
+      color: var(--ink);
+      font-size: clamp(24px, 2.9vw, 38px);
+      line-height: 1.34;
+      max-width: 980px;
+    }
+
+    .source-text {
+      display: grid;
+      gap: 16px;
+      padding: 24px 28px;
+      border-radius: 18px;
+      background: #fbfdff;
+      border: 1px solid var(--line);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+    }
+
+    .source-text p {
+      font-size: clamp(17px, 1.55vw, 21px);
+      line-height: 1.72;
+    }
+
+    .source-raw {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--ink);
+      font-family: inherit;
+      font-size: clamp(17px, 1.45vw, 20px);
+      line-height: 1.68;
+    }
+
+    .source-text strong {
+      color: var(--blue);
+    }
+
+    .source-tag {
+      display: inline-flex;
+      width: fit-content;
+      color: var(--blue);
+      background: var(--blue-bg);
+      border: 1px solid #b7cdea;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .visual-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ffffff 0%, #f7fafc 100%);
+      padding: 12px;
+      overflow: hidden;
+    }
+
+    .visual-card svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 270px;
+    }
+
+    .visual-card.tall svg { max-height: 330px; }
+
+    .svg-label {
+      font-size: 18px;
+      font-weight: 800;
+      fill: var(--ink);
+    }
+
+    .svg-small {
+      font-size: 14px;
+      fill: var(--muted);
+    }
+
+    .svg-bad { fill: var(--bad); }
+    .svg-good { fill: var(--good); }
+    .svg-blue { fill: var(--blue); }
+    .svg-amber { fill: var(--amber); }
+
+    .table {
+      display: grid;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 0.9fr 1.5fr 1.5fr;
+      border-top: 1px solid var(--line);
+    }
+
+    .row:first-child { border-top: 0; }
+
+    .cell {
+      padding: 14px 16px;
+      border-left: 1px solid var(--line);
+      font-size: clamp(14px, 1.35vw, 18px);
+      line-height: 1.42;
+    }
+
+    .cell:first-child { border-left: 0; font-weight: 800; }
+    .head .cell { background: #eef3f7; font-weight: 800; }
+    .bad-text { color: var(--bad); }
+    .good-text { color: var(--good); }
+
+    .task {
+      display: grid;
+      gap: 12px;
+      font-size: clamp(18px, 1.9vw, 24px);
+      line-height: 1.5;
+    }
+
+    .blank {
+      display: inline-block;
+      min-width: 160px;
+      border-bottom: 2px solid #8091a2;
+      transform: translateY(-2px);
+    }
+
+    .note {
+      margin-top: auto;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    footer { padding: 0 22px 16px; }
+
+    .progress {
+      height: 6px;
+      background: rgba(32, 39, 51, 0.12);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), var(--good));
+      transition: width 180ms ease;
+    }
+
+    @media (max-width: 760px) {
+      header { padding: 10px 12px; }
+      .brand span { display: none; }
+      main { padding: 12px; }
+      .slide {
+        min-height: calc(100vh - 118px);
+        padding: 24px 18px;
+      }
+      .split, .thirds { grid-template-columns: 1fr; }
+      .row { grid-template-columns: 1fr; }
+      .cell { border-left: 0; border-top: 1px solid var(--line); }
+      .cell:first-child { border-top: 0; }
+      .toolbar button { padding: 7px 10px; }
+      .visual-card svg { max-height: 230px; }
+      .mini-diagram { height: 118px; }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute; left:-9999px; top:-9999px;" aria-hidden="true" focusable="false">
+    <defs>
+      <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#245c9c" />
+      </marker>
+      <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#873f49" />
+      </marker>
+      <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#126b62" />
+      </marker>
+      <marker id="arrow-amber" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#8a5b10" />
+      </marker>
+      <symbol id="diagram-self-center" viewBox="0 0 360 220">
+        <line x1="180" y1="110" x2="64" y2="52" stroke="#873f49" stroke-width="9" stroke-linecap="round"/>
+        <line x1="180" y1="110" x2="64" y2="168" stroke="#873f49" stroke-width="9" stroke-linecap="round"/>
+        <line x1="180" y1="110" x2="296" y2="52" stroke="#873f49" stroke-width="9" stroke-linecap="round"/>
+        <line x1="180" y1="110" x2="296" y2="168" stroke="#873f49" stroke-width="9" stroke-linecap="round"/>
+        <circle cx="64" cy="52" r="38" fill="#f7e6e8" stroke="#e4b8bd" stroke-width="3"/>
+        <circle cx="64" cy="168" r="38" fill="#f7e6e8" stroke="#e4b8bd" stroke-width="3"/>
+        <circle cx="296" cy="52" r="38" fill="#f7e6e8" stroke="#e4b8bd" stroke-width="3"/>
+        <circle cx="296" cy="168" r="38" fill="#f7e6e8" stroke="#e4b8bd" stroke-width="3"/>
+        <circle cx="180" cy="110" r="58" fill="#873f49"/>
+        <text x="180" y="128" text-anchor="middle" fill="#fff" font-size="52" font-weight="900">我</text>
+        <text x="180" y="210" text-anchor="middle" fill="#873f49" font-size="23" font-weight="900">我在解释中心</text>
+      </symbol>
+      <symbol id="diagram-system-links" viewBox="0 0 360 220">
+        <path d="M90 52 C128 86, 232 86, 270 52" fill="none" stroke="#126b62" stroke-width="9" stroke-linecap="round"/>
+        <path d="M90 168 C128 134, 232 134, 270 168" fill="none" stroke="#126b62" stroke-width="9" stroke-linecap="round"/>
+        <line x1="70" y1="88" x2="70" y2="132" stroke="#126b62" stroke-width="8" stroke-linecap="round"/>
+        <line x1="290" y1="88" x2="290" y2="132" stroke="#126b62" stroke-width="8" stroke-linecap="round"/>
+        <circle cx="70" cy="52" r="38" fill="#e3f4f0" stroke="#9bd8cf" stroke-width="3"/>
+        <circle cx="70" cy="168" r="38" fill="#e3f4f0" stroke="#9bd8cf" stroke-width="3"/>
+        <circle cx="290" cy="52" r="38" fill="#e3f4f0" stroke="#9bd8cf" stroke-width="3"/>
+        <circle cx="290" cy="168" r="38" fill="#e3f4f0" stroke="#9bd8cf" stroke-width="3"/>
+        <circle cx="180" cy="110" r="44" fill="#fff" stroke="#245c9c" stroke-width="5" stroke-dasharray="10 10"/>
+        <text x="180" y="126" text-anchor="middle" fill="#245c9c" font-size="44" font-weight="900">我</text>
+        <text x="180" y="210" text-anchor="middle" fill="#126b62" font-size="23" font-weight="900">系统还有其他连接</text>
+      </symbol>
+    </defs>
+  </svg>
+
+  <div class="deck">
+    <header>
+      <div class="brand">
+        <strong>思想实验活动 PPT：从自我中心理解到全局式理解</strong>
+        <span>方向键 / 空格翻页，N 键显示主持提示</span>
+      </div>
+      <div class="toolbar">
+        <button id="prev" type="button" aria-label="上一页">←</button>
+        <span class="counter"><span id="current">1</span>/<span id="total">26</span></span>
+        <button id="next" type="button" aria-label="下一页">→</button>
+        <button id="notesToggle" type="button">提示</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="slide active" data-step="01">
+        <div class="kicker">思想实验工作坊</div>
+        <h1>如果世界不是围着我转，会怎样？</h1>
+        <p class="lead">从自我中心的理解，跳到全局式理解</p>
+        <div class="visual-card tall" role="img" aria-label="从自我中心视角跳到全局式理解的示意图">
+          <svg viewBox="0 0 920 280" xmlns="http://www.w3.org/2000/svg">
+            <rect x="42" y="42" width="250" height="176" rx="20" fill="#f7e6e8" stroke="#e4b8bd"/>
+            <circle cx="167" cy="130" r="48" fill="#873f49"/>
+            <text x="167" y="139" text-anchor="middle" fill="#fff" font-size="34" font-weight="900">我</text>
+            <path d="M167 78 V42 M167 182 V218 M115 130 H42 M219 130 H292" stroke="#873f49" stroke-width="7" stroke-linecap="round"/>
+            <text x="167" y="248" text-anchor="middle" class="svg-label svg-bad">世界被压成“和我有关”</text>
+
+            <path d="M330 130 H458" stroke="#245c9c" stroke-width="6" marker-end="url(#arrow-blue)"/>
+            <text x="394" y="104" text-anchor="middle" class="svg-small">思想实验</text>
+
+            <rect x="500" y="42" width="378" height="176" rx="20" fill="#e3f4f0" stroke="#a4d8ce"/>
+            <circle cx="606" cy="90" r="28" fill="#245c9c"/>
+            <circle cx="716" cy="84" r="24" fill="#8a5b10"/>
+            <circle cx="786" cy="150" r="30" fill="#126b62"/>
+            <circle cx="612" cy="170" r="24" fill="#657383"/>
+            <path d="M631 94 C660 98, 682 96, 696 88 M731 98 C756 116, 774 130, 786 150 M760 158 C710 172, 660 172, 636 170 M612 146 C612 124, 612 108, 606 90" fill="none" stroke="#126b62" stroke-width="4"/>
+            <text x="606" y="97" text-anchor="middle" fill="#fff" font-size="18" font-weight="800">我</text>
+            <text x="716" y="90" text-anchor="middle" fill="#fff" font-size="14" font-weight="800">他人</text>
+            <text x="786" y="157" text-anchor="middle" fill="#fff" font-size="14" font-weight="800">系统</text>
+            <text x="612" y="176" text-anchor="middle" fill="#fff" font-size="14" font-weight="800">规律</text>
+            <text x="689" y="248" text-anchor="middle" class="svg-label svg-good">世界有更大的结构与运行方式</text>
+          </svg>
+        </div>
+        <div class="note">主持人话术：今天我们讨论一个很简单，但很有穿透力的问题：如果没有我，会怎样？这个问题不是为了证明我不重要，而是为了训练一种能力：当我们解释世界时，能不能暂时把自己从中心位置移开，看见更大的结构、规律和运行方式。</div>
+      </section>
+
+      <section class="slide" data-step="02">
+        <h2>我们常把复杂世界想成“和我有关”</h2>
+        <div class="split">
+          <div class="panel bad"><h3>公司出问题</h3><p>是不是因为我不够负责？</p></div>
+          <div class="panel bad"><h3>亲戚借钱</h3><p>我不帮是不是没人情味？</p></div>
+          <div class="panel bad"><h3>项目出事</h3><p>如果我不兜底是不是完了？</p></div>
+          <div class="panel bad"><h3>父母催婚</h3><p>是不是我让他们失望？</p></div>
+        </div>
+        <p class="lead">这些问题表面不同，底层都在把复杂情境压缩成一个以“我”为中心的故事。</p>
+        <div class="note">主持人话术：这些想法看起来都很自然，也都很有人味。但它们有一个共同点：复杂情境一出现，我们很快会把它解释成“是不是和我有关”“是不是因为我”“是不是要靠我”。互动：请大家在聊天区写一句最近最熟悉的“都和我有关”的念头。</div>
+      </section>
+
+      <section class="slide" data-step="03">
+        <h2>什么是自我中心的理解？</h2>
+        <div class="quote">在解释世界时，以自己的经验、感知和观点为中心，理解周围发生的事。</div>
+        <div class="thirds">
+          <div class="panel blue"><h3>优点</h3><p>直观，能反映自己的感受。</p></div>
+          <div class="panel bad"><h3>局限</h3><p>视角有限，主观性强。</p></div>
+          <div class="panel bad"><h3>风险</h3><p>误解不符合个人经验的信息。</p></div>
+        </div>
+        <div class="note">主持人话术：自我中心理解不是说一个人自私。它只是说：我们天然会从自己的经验、感受、偏好出发解释世界。这有好处，因为它直观；但也有限制，因为世界并不只按我的经验运行。</div>
+      </section>
+
+      <section class="slide" data-step="04">
+        <div class="kicker">原文阅读 1/2</div>
+        <h2>理解：你如何解释世界</h2>
+        <div class="source-text">
+          <span class="source-tag">摘自 OCR 原文</span>
+          <p>接着，我们再来讨论“理解”，也就是你如何解释世界。一个典型现象是，人们在解释世界时，倾向于以自己为中心出发。这种现象我们称之为<strong>“自我中心的理解”</strong>。</p>
+          <p><strong>“自我中心的理解”</strong>是指你在解释世界时，以自己的经验、感知和观点为中心，对周围世界发生的各种现象进行解释。它的优点是较为直观，并且更能反映你的感受和偏好。</p>
+          <p>然而，它的缺点是视角有限和主观性强。视角有限：由于从个人视角出发，可能会忽略他人的感受和观点，从而导致对世界的理解广度与深度不足。主观性强：由于过于依赖个人的感受和偏好，可能会忽略或误解不符合个人经验的那些信息。</p>
+        </div>
+        <div class="note">主持人话术：这一页先不要急着解释，给大家 30 秒读原文。读的时候请大家只抓一个关键词：理解不是事实本身，而是“我如何解释世界”。</div>
+      </section>
+
+      <section class="slide" data-step="05">
+        <div class="kicker">原文阅读 2/2</div>
+        <h2>复杂世界被加工成单一方向</h2>
+        <div class="source-text">
+          <span class="source-tag">摘自 OCR 原文</span>
+          <p>用情境行动周期来表示“自我中心的理解”，那就是我们在情境中感知到的任何事物，无论是三角形、圆形还是正方形，在我们大脑中都会被处理成我们最熟悉或最擅长处理的形状。</p>
+          <p>这类解释世界的方式，实际上将一个非常错综复杂的情境，用我们最擅长的方式，加工成一个单一的方向，然后用这个单一的方向来指导我们的行动。这种解释世界的方式其实是高估了自己的理解能力，低估了生物世界、物质世界和信息世界的复杂性。</p>
+          <p>事实上，物种兴衰、星辰起伏、世事变迁，世界上无数事物都有其自身的规律，并不受你的影响。我们每个人在世界上，或许仅仅是一个极其渺小的存在。</p>
+          <p>———— 《工作的心智》第八章</p>
+        </div>
+        <div class="note">主持人话术：这一段就是本活动的理论入口。它说明我们为什么需要“如果没有我，会怎样？”：因为很多痛苦不是事情本身，而是我们把复杂世界压成了一个以我为中心的单一解释。</div>
+      </section>
+
+      <section class="slide" data-step="06">
+        <h2>为什么它会让人困住？</h2>
+        <div class="split">
+          <div class="panel bad">
+            <h3>视角有限</h3>
+            <p>只从自己的感受出发，容易忽略他人的处境、系统的规则和事件的历史惯性。</p>
+          </div>
+          <div class="panel bad">
+            <h3>主观性强</h3>
+            <p>不符合个人经验的信息，会被忽略、误解，或者被加工成“还是和我有关”。</p>
+          </div>
+        </div>
+        <div class="visual-card" role="img" aria-label="自我中心理解把外部信息压缩为单一解释">
+          <svg viewBox="0 0 920 210" xmlns="http://www.w3.org/2000/svg">
+            <rect x="42" y="54" width="196" height="102" rx="18" fill="#e7f0fb" stroke="#b7cdea"/>
+            <text x="140" y="100" text-anchor="middle" class="svg-label svg-blue">他人的感受</text>
+            <text x="140" y="128" text-anchor="middle" class="svg-small">关系 / 历史 / 限制</text>
+            <rect x="274" y="54" width="196" height="102" rx="18" fill="#fff3d8" stroke="#f0d79d"/>
+            <text x="372" y="100" text-anchor="middle" class="svg-label svg-amber">系统的规律</text>
+            <text x="372" y="128" text-anchor="middle" class="svg-small">流程 / 资源 / 角色</text>
+            <path d="M500 105 H612" stroke="#873f49" stroke-width="6" marker-end="url(#arrow-red)"/>
+            <rect x="646" y="48" width="218" height="114" rx="20" fill="#f7e6e8" stroke="#e4b8bd"/>
+            <circle cx="712" cy="105" r="36" fill="#873f49"/>
+            <text x="712" y="114" text-anchor="middle" fill="#fff" font-size="28" font-weight="900">我</text>
+            <text x="782" y="96" text-anchor="middle" class="svg-label svg-bad">单一解释</text>
+            <text x="782" y="126" text-anchor="middle" class="svg-small">是不是因为我？</text>
+          </svg>
+        </div>
+        <div class="note">主持人话术：这正是 OCR 原文指出的问题：自我中心理解很直观，但视角有限、主观性强。它会把不符合个人经验的信息处理掉，最后复杂世界被压成一个熟悉的问题：是不是因为我？</div>
+      </section>
+
+      <section class="slide" data-step="07">
+        <h2>复杂情境如何被压成单一方向？</h2>
+        <div class="visual-card tall" role="img" aria-label="复杂情境被自我中心理解压缩成单一方向">
+          <svg viewBox="0 0 920 300" xmlns="http://www.w3.org/2000/svg">
+            <rect x="32" y="40" width="300" height="190" rx="18" fill="#e7f0fb" stroke="#b7cdea"/>
+            <circle cx="96" cy="86" r="28" fill="#245c9c"/>
+            <rect x="158" y="62" width="84" height="48" rx="10" fill="#fff" stroke="#9db3c8"/>
+            <polygon points="104,160 134,108 164,160" fill="#8a5b10"/>
+            <circle cx="238" cy="158" r="36" fill="#126b62"/>
+            <path d="M72 196 C128 146, 190 218, 274 118" fill="none" stroke="#657383" stroke-width="5" stroke-dasharray="8 8"/>
+            <text x="182" y="262" text-anchor="middle" class="svg-label svg-blue">复杂情境：多因素、多行动者、多规律</text>
+
+            <path d="M370 138 H506" stroke="#873f49" stroke-width="6" marker-end="url(#arrow-red)"/>
+            <text x="438" y="112" text-anchor="middle" class="svg-small">自我中心加工</text>
+
+            <rect x="548" y="72" width="310" height="126" rx="18" fill="#f7e6e8" stroke="#e4b8bd"/>
+            <circle cx="616" cy="135" r="40" fill="#873f49"/>
+            <text x="616" y="144" text-anchor="middle" fill="#fff" font-size="30" font-weight="900">我</text>
+            <path d="M660 135 H806" stroke="#873f49" stroke-width="8" stroke-linecap="round" marker-end="url(#arrow-red)"/>
+            <text x="734" y="118" text-anchor="middle" class="svg-small">单一方向</text>
+            <text x="703" y="262" text-anchor="middle" class="svg-label svg-bad">被压缩成：事情的关键在我</text>
+          </svg>
+        </div>
+        <div class="note">主持人话术：一个真实情境里，往往有很多因素：他人的选择、组织流程、资源限制、历史惯性、社会评价、家庭结构。但自我中心理解会把它加工成一个单一方向：这是不是因为我？是不是要靠我？是不是在评价我？</div>
+      </section>
+
+      <section class="slide" data-step="08">
+        <h2>为什么需要这个思想实验？</h2>
+        <div class="quote">问题不只是“我想太多”，而是我高估了自己的解释能力，低估了世界的复杂性。</div>
+        <div class="thirds">
+          <div class="panel bad"><h3>生物世界</h3><p>人的情绪、身体、衰老和需求，有自己的节律。</p></div>
+          <div class="panel bad"><h3>物质世界</h3><p>资源、时间、金钱和制度，有自己的限制。</p></div>
+          <div class="panel bad"><h3>信息世界</h3><p>沟通、误会、流言和评价，有自己的传播方式。</p></div>
+        </div>
+        <div class="panel good">
+          <h3>思想实验要解决的问题</h3>
+          <p>它不是让人停止负责，而是帮助人承认：世界上很多事物有自身规律，并不完全受“我”的影响。</p>
+        </div>
+        <div class="note">主持人话术：如果只说“别想太多”，参与者不会真的打开。因为他们不是缺少安慰，而是缺少一个新的解释框架。这个思想实验的作用，就是把他们从“我必须解释一切、承担一切”的位置上移开。</div>
+      </section>
+
+      <section class="slide" data-step="09">
+        <h2>思想实验：如果没有我，会怎样？</h2>
+        <div class="split">
+          <div class="panel bad"><h3>不是</h3><p>证明我不重要，或者让我逃避责任。</p></div>
+          <div class="panel good"><h3>而是</h3><p>把“我”从解释中心暂时移开，观察世界如何继续运行。</p></div>
+        </div>
+        <div class="quote">假设我不再是这个情境的中心解释点，这个情境还会如何运行？</div>
+        <div class="note">主持人话术：这个问题最容易被误解。它不是要你证明“我不重要”，也不是让你冷漠、逃避、撤退。它是在问：如果我暂时不把自己放在解释中心，这个系统还会怎么运行？</div>
+      </section>
+
+      <section class="slide" data-step="10">
+        <h2>它为什么巧妙？</h2>
+        <div class="split">
+          <div class="panel bad">
+            <h3>糟糕的思想实验</h3>
+            <p>不断追问“我是不是错了、坏了、不重要了”，问题会滑向自我审判。</p>
+            <svg class="mini-diagram" role="img" aria-label="我在解释中心"><use href="#diagram-self-center"/></svg>
+          </div>
+          <div class="panel good">
+            <h3>巧妙的思想实验</h3>
+            <p>只改变一个变量：暂时移开“我在解释中心”，观察世界如何继续运行。</p>
+            <svg class="mini-diagram" role="img" aria-label="系统还有其他连接"><use href="#diagram-system-links"/></svg>
+          </div>
+        </div>
+        <div class="thirds">
+          <div class="panel"><h3>描述性</h3><p>先定义情境与角色。</p></div>
+          <div class="panel"><h3>分析性</h3><p>再看行动者、规律和因果。</p></div>
+          <div class="panel"><h3>应用性</h3><p>最后设计小观察验证。</p></div>
+        </div>
+        <div class="note">主持人话术：它巧妙的地方在于，不是叫你“别在乎”，而是给你一个可操作的认知动作：把“我”从解释中心挪开一点。于是其他变量会浮现出来，问题不再只有一种解释，也不再只有一种行动。</div>
+      </section>
+
+      <section class="slide" data-step="11">
+        <h2>它不是否定我，而是移开解释中心</h2>
+        <div class="visual-card" role="img" aria-label="我从解释中心移出后，看见系统中的其他行动者和规律">
+          <svg viewBox="0 0 920 250" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="210" cy="125" r="48" fill="#873f49"/>
+            <text x="210" y="134" text-anchor="middle" fill="#fff" font-size="32" font-weight="900">我</text>
+            <circle cx="94" cy="72" r="30" fill="#f7e6e8" stroke="#e4b8bd"/>
+            <circle cx="94" cy="180" r="30" fill="#f7e6e8" stroke="#e4b8bd"/>
+            <circle cx="330" cy="72" r="30" fill="#f7e6e8" stroke="#e4b8bd"/>
+            <circle cx="330" cy="180" r="30" fill="#f7e6e8" stroke="#e4b8bd"/>
+            <path d="M122 84 L170 108 M122 168 L170 142 M302 84 L250 108 M302 168 L250 142" stroke="#873f49" stroke-width="4"/>
+            <text x="210" y="226" text-anchor="middle" class="svg-label svg-bad">我在解释中心</text>
+
+            <path d="M410 125 H500" stroke="#245c9c" stroke-width="6" marker-end="url(#arrow-blue)"/>
+            <text x="455" y="101" text-anchor="middle" class="svg-small">移开</text>
+
+            <circle cx="610" cy="72" r="30" fill="#e3f4f0" stroke="#a4d8ce"/>
+            <circle cx="610" cy="180" r="30" fill="#e3f4f0" stroke="#a4d8ce"/>
+            <circle cx="770" cy="72" r="30" fill="#e3f4f0" stroke="#a4d8ce"/>
+            <circle cx="770" cy="180" r="30" fill="#e3f4f0" stroke="#a4d8ce"/>
+            <circle cx="690" cy="126" r="28" fill="#fff" stroke="#245c9c" stroke-width="3" stroke-dasharray="8 8"/>
+            <text x="690" y="134" text-anchor="middle" class="svg-blue" font-size="22" font-weight="900">我</text>
+            <path d="M636 86 C670 106, 710 106, 744 86 M636 166 C670 146, 710 146, 744 166 M610 102 V150 M770 102 V150" fill="none" stroke="#126b62" stroke-width="4"/>
+            <text x="690" y="226" text-anchor="middle" class="svg-label svg-good">系统还有其他连接</text>
+          </svg>
+        </div>
+        <div class="note">主持人话术：很多人一听“如果没有我”，会觉得这是在否定自己。不是。我们不是把自己删除，而是暂时把自己从解释中心移开。这样我们才能看见：系统里还有其他人、其他关系、其他规律、其他路径。</div>
+      </section>
+
+      <section class="slide" data-step="12">
+        <h2>思想实验的实体：假设</h2>
+        <div class="panel amber">
+          <h3>修正版核心假设</h3>
+          <p>如果我不是这个情境的中心变量，世界会怎样继续运行？</p>
+        </div>
+        <div class="split">
+          <div class="panel"><h3>不要问</h3><p>我是不是不重要？</p></div>
+          <div class="panel good"><h3>要问</h3><p>除了我，这个系统还有哪些规律、角色和路径？</p></div>
+        </div>
+        <div class="note">主持人话术：思想实验不是情绪宣泄，也不是观点辩论。它的实体是一个假设。只要假设清楚，讨论就会变清楚。这里我们要把“我是不是不重要”的价值判断，改写成对系统如何运行的观察假设。</div>
+      </section>
+
+      <section class="slide" data-step="13">
+        <h2>描述性维度：我从哪里移开？</h2>
+        <div class="task">
+          <p>我从哪个情境中移开？</p>
+          <p>我移开的是什么角色？</p>
+          <p>观察时间是多久？</p>
+          <p>我要观察哪些变化？</p>
+        </div>
+        <div class="panel good">
+          <h3>好假设</h3>
+          <p>如果我离开这个岗位 90 天，项目、客户和流程会如何重新分配？</p>
+        </div>
+        <div class="note">主持人话术：描述性维度就是把问题说清楚。“没有我”不能是一个模糊的自我否定，它必须变成一个可观察的设定。我们要问清楚：我从哪里移开？移开的是什么角色？观察多久？观察什么变化？</div>
+      </section>
+
+      <section class="slide" data-step="14">
+        <h2>分析性维度：世界怎样运行？</h2>
+        <div class="task">
+          <p>这个情境除了我，还有哪些行动者？</p>
+          <p>这个系统自身有什么规律？</p>
+          <p>哪些结果其实不是由我决定的？</p>
+          <p>我是不是把复杂因果压缩成了“都和我有关”？</p>
+        </div>
+        <div class="note">主持人话术：这是今天最关键的一页。我们不是问“谁依赖我”，而是问：这个世界有哪些不以我为中心的运行方式？当这个问题出现时，人的视野会从个人道德判断，转向系统观察。</div>
+      </section>
+
+      <section class="slide" data-step="15">
+        <h2>应用性维度：如何验证？</h2>
+        <div class="visual-card" role="img" aria-label="从假设到观察实验再到现实反馈">
+          <svg viewBox="0 0 920 220" xmlns="http://www.w3.org/2000/svg">
+            <rect x="48" y="58" width="190" height="104" rx="18" fill="#fff3d8" stroke="#f0d79d"/>
+            <text x="143" y="101" text-anchor="middle" class="svg-label svg-amber">去中心化假设</text>
+            <text x="143" y="130" text-anchor="middle" class="svg-small">世界不只靠我运行</text>
+            <path d="M268 110 H392" stroke="#8a5b10" stroke-width="5" marker-end="url(#arrow-amber)"/>
+            <rect x="420" y="58" width="168" height="104" rx="18" fill="#e7f0fb" stroke="#b7cdea"/>
+            <text x="504" y="101" text-anchor="middle" class="svg-label svg-blue">小观察</text>
+            <text x="504" y="130" text-anchor="middle" class="svg-small">暂停 / 访谈 / 记录</text>
+            <path d="M618 110 H742" stroke="#245c9c" stroke-width="5" marker-end="url(#arrow-blue)"/>
+            <rect x="770" y="58" width="110" height="104" rx="18" fill="#e3f4f0" stroke="#a4d8ce"/>
+            <text x="825" y="101" text-anchor="middle" class="svg-label svg-good">反馈</text>
+            <text x="825" y="130" text-anchor="middle" class="svg-small">世界如何回应</text>
+          </svg>
+        </div>
+        <div class="chips">
+          <span class="chip">做一次观察</span>
+          <span class="chip">画系统图</span>
+          <span class="chip">访谈其他人</span>
+          <span class="chip">暂停自动反应</span>
+        </div>
+        <div class="note">主持人话术：应用性维度不是马上做大决定。它是设计一个小观察，看看现实是否真的像我想的那样围着我转。我们要用小动作收集反馈，而不是直接跳到人生决策。</div>
+      </section>
+
+      <section class="slide" data-step="16">
+        <h2>案例一：离职</h2>
+        <div class="split">
+          <div class="panel bad"><h3>自我中心解释</h3><p>如果我走了，公司是不是会觉得我忘恩负义？</p><svg class="mini-diagram" role="img" aria-label="我在解释中心"><use href="#diagram-self-center"/></svg></div>
+          <div class="panel good"><h3>去中心化假设</h3><p>如果我不是团队运转的中心变量，项目、客户、流程和其他成员会按照什么规律继续运行？</p><svg class="mini-diagram" role="img" aria-label="系统还有其他连接"><use href="#diagram-system-links"/></svg></div>
+        </div>
+        <div class="panel amber"><h3>验证动作</h3><p>做交接文档，请假一周，观察系统如何重新分配信息和责任。</p></div>
+        <div class="note">主持人话术：离职思想实验不是为了证明我可有可无。它是让我们看见：公司系统并不只由我驱动，它还有流程、角色、客户关系和组织惯性。</div>
+      </section>
+
+      <section class="slide" data-step="17">
+        <h2>案例二：借钱</h2>
+        <div class="split">
+          <div class="panel bad"><h3>自我中心解释</h3><p>如果我不借，他是不是就没有办法？是不是说明我没人情味？</p><svg class="mini-diagram" role="img" aria-label="我在解释中心"><use href="#diagram-self-center"/></svg></div>
+          <div class="panel good"><h3>去中心化假设</h3><p>如果我不是对方困境的唯一出口，他还可能通过哪些资源、关系和选择来解决问题？</p><svg class="mini-diagram" role="img" aria-label="系统还有其他连接"><use href="#diagram-system-links"/></svg></div>
+        </div>
+        <div class="panel amber"><h3>验证动作</h3><p>先不答应，询问用途、还款计划和其他可用路径。</p></div>
+        <div class="note">主持人话术：借钱这个场景最容易被压缩成“我帮或我不帮”。去中心化假设会帮我们看见：对方的世界里不应该只有我一个出口。</div>
+      </section>
+
+      <section class="slide" data-step="18">
+        <h2>案例三：职场兜底</h2>
+        <div class="split">
+          <div class="panel bad"><h3>自我中心解释</h3><p>如果我不帮，项目出事就是我的问题。</p><svg class="mini-diagram" role="img" aria-label="我在解释中心"><use href="#diagram-self-center"/></svg></div>
+          <div class="panel good"><h3>去中心化假设</h3><p>如果我不再把团队漏洞解释成自己的责任，项目问题会暴露出哪些真实结构？</p><svg class="mini-diagram" role="img" aria-label="系统还有其他连接"><use href="#diagram-system-links"/></svg></div>
+        </div>
+        <div class="panel amber"><h3>验证动作</h3><p>不再私下补救，改为公开记录风险、流程漏洞和责任人。</p></div>
+        <div class="note">主持人话术：这个案例的重点不是撒手不管，而是让团队问题从“我的责任”里释放出来，重新回到流程、管理和分工里。</div>
+      </section>
+
+      <section class="slide" data-step="19">
+        <h2>案例四：父母年纪大了，要不要结婚</h2>
+        <div class="split">
+          <div class="panel bad"><h3>自我中心解释</h3><p>如果我不结婚，就是让父母失望，甚至让他们晚年不安心。</p><svg class="mini-diagram" role="img" aria-label="我在解释中心"><use href="#diagram-self-center"/></svg></div>
+          <div class="panel good"><h3>去中心化假设</h3><p>如果我不把父母晚年焦虑全部解释成“我必须结婚”，他们真正担心的世界是什么？</p><svg class="mini-diagram" role="img" aria-label="系统还有其他连接"><use href="#diagram-system-links"/></svg></div>
+        </div>
+        <div class="panel amber"><h3>验证动作</h3><p>和父母谈一次：他们担心的是孤独、照护、经济、社会评价，还是我的生活稳定？</p></div>
+        <div class="note">主持人话术：这里不是反抗父母，也不是否定婚姻。它是把“父母焦虑”从“我必须结婚”这个单一路径中释放出来。</div>
+      </section>
+
+      <section class="slide" data-step="20">
+        <h2>个人书写：我的自我中心解释</h2>
+        <div class="task">
+          <p>我最近反复想的一个问题：<span class="blank"></span></p>
+          <p>我把它解释成“都和我有关”的方式是：<span class="blank"></span></p>
+          <p>这个解释让我产生的情绪是：<span class="blank"></span></p>
+        </div>
+        <div class="note">主持人话术：接下来 5 分钟，只写，不讨论。不需要写隐私细节，只写结构。例如：“如果我不做某件事，别人就会失望 / 系统就会崩 / 关系就会坏。”</div>
+      </section>
+
+      <section class="slide" data-step="21">
+        <h2>改写成去中心化假设</h2>
+        <div class="panel amber">
+          <h3>改写模板</h3>
+          <p>如果我不是 <span class="blank"></span> 的中心变量，<span class="blank"></span> 会怎样继续运行？</p>
+        </div>
+        <div class="thirds">
+          <div class="panel"><h3>描述性</h3><p>我从哪里移开？</p></div>
+          <div class="panel"><h3>分析性</h3><p>系统还有什么规律？</p></div>
+          <div class="panel"><h3>应用性</h3><p>我能如何验证？</p></div>
+        </div>
+        <div class="note">主持人话术：这一步是整个活动的核心。你不是要把问题想得更轻松，而是要把问题从“我是不是怎样”改成“系统会怎样运行”。请把自我审判句，改成系统观察句。</div>
+      </section>
+
+      <section class="slide" data-step="22">
+        <h2>小组讨论三问</h2>
+        <div class="thirds">
+          <div class="panel blue"><h3>描述性</h3><p>你说的“没有我”，具体是把哪个角色移开？</p></div>
+          <div class="panel good"><h3>分析性</h3><p>这个系统除了你，还有哪些行动者和规律？</p></div>
+          <div class="panel amber"><h3>应用性</h3><p>有没有一个 7 天内能做的小观察？</p></div>
+        </div>
+        <div class="panel bad">
+          <h3>不要做</h3>
+          <p>不要急着给建议，不要道德评价，不要替对方做决定。</p>
+        </div>
+        <div class="note">主持人话术：小组里最重要的不是给建议，而是帮对方把假设打磨清楚。只问三类问题：这个“没有我”具体移开哪个角色？系统还有哪些行动者和规律？有没有一个 7 天内能做的小观察？</div>
+      </section>
+
+      <section class="slide" data-step="23">
+        <h2>分享：我看见了哪个更大的系统？</h2>
+        <div class="task">
+          <p>原来的自我中心解释：<span class="blank"></span></p>
+          <p>改写后的去中心化假设：<span class="blank"></span></p>
+          <p>我看见的更大系统是：<span class="blank"></span></p>
+        </div>
+        <div class="note">主持人话术：每组只分享一个案例。不分享隐私细节，只分享结构。我们关注的是：这个问题如何从“都和我有关”，变成“我看见了更大的系统”。</div>
+      </section>
+
+      <section class="slide" data-step="24">
+        <h2>7 天观察实验</h2>
+        <div class="visual-card" role="img" aria-label="七天观察实验路线图">
+          <svg viewBox="0 0 920 220" xmlns="http://www.w3.org/2000/svg">
+            <path d="M80 140 C180 64, 290 64, 390 126 C486 186, 590 170, 692 96 C756 50, 820 72, 860 130" fill="none" stroke="#d8e0e7" stroke-width="18" stroke-linecap="round"/>
+            <path d="M80 140 C180 64, 290 64, 390 126 C486 186, 590 170, 692 96 C756 50, 820 72, 860 130" fill="none" stroke="#126b62" stroke-width="6" stroke-linecap="round" stroke-dasharray="14 14"/>
+            <circle cx="92" cy="140" r="28" fill="#f7e6e8" stroke="#e4b8bd"/>
+            <text x="92" y="147" text-anchor="middle" class="svg-bad" font-size="23" font-weight="900">旧</text>
+            <rect x="260" y="72" width="132" height="58" rx="14" fill="#fff3d8" stroke="#f0d79d"/>
+            <text x="326" y="107" text-anchor="middle" class="svg-label svg-amber">新假设</text>
+            <rect x="530" y="96" width="132" height="58" rx="14" fill="#e7f0fb" stroke="#b7cdea"/>
+            <text x="596" y="131" text-anchor="middle" class="svg-label svg-blue">观察</text>
+            <circle cx="860" cy="130" r="30" fill="#126b62"/>
+            <path d="M848 131 L858 142 L876 117" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="task">
+          <p>我接下来 7 天要观察：<span class="blank"></span></p>
+          <p>我会记录：系统是否真的像我想的那样围着我转。</p>
+        </div>
+        <div class="note">主持人话术：今天不要求你做一个大决定，只要求你带走一个观察实验。用 7 天去看看：世界是不是还有别的连接、别的规律、别的路径。</div>
+      </section>
+
+      <section class="slide" data-step="25">
+        <h2>从自我中心理解，到全局式理解</h2>
+        <div class="split">
+          <div class="panel bad">
+            <h3>出发点</h3>
+            <p>事情都和我有关。</p>
+          </div>
+          <div class="panel good">
+            <h3>抵达点</h3>
+            <p>世界有更大的结构、规律和运行方式。</p>
+          </div>
+        </div>
+        <p class="quote">“如果没有我，会怎样？”不是为了否定我，而是让我看见更大的世界。</p>
+        <div class="note">主持人收束：今天我们练习的不是冷漠，不是退出，也不是逃避责任。我们练习的是一种更大的理解方式。当我不再把自己放在解释中心时，我会发现：世界没有因此消失，系统仍然在运行，其他人也有选择，很多事情有它自己的规律。这时，我们不是变得不重要，而是变得更清醒。</div>
+      </section>
+
+      <section class="slide" data-step="26">
+        <div class="kicker">探讨案例</div>
+        <h2>小红书起号：不要从心念世界出发</h2>
+        <div class="source-text">
+          <span class="source-tag">摘自 OCR 原文</span>
+          <pre class="source-raw">不要让自己的实践一上来就是从自己的【心念世界】出发：我要做一个小红书的设计号/读书号/项目管理号。
+
+这种实践，是经典的【撞南墙】实践，行动的结果多半不好。
+
+那么，我们一上来就思考：如果没有我这个人，那么，小红书的号如何起量才快呢？如果没有我这个人，那么，小红书最被证明的起号走量规律又是什么呢？
+
+进一步思考：现实世界有哪些限制？哪些号的赛道必然做不起来，哪些号的赛道必然做的起来，并且更易持久，不易被查封？
+
+再继续思考：真实世界有哪些永恒的人性规律？小红书、抖音、b站，甚至五千年前的、两千年前，都始终存在。
+
+这个时候，你会发现，你的行动不容易掉入大坑了。更易成功。</pre>
+        </div>
+        <div class="note">主持人话术：这一页作为开放讨论案例，不先改写原文。请大家先从原文中找出“自我中心理解”和“如果没有我，会怎样？”分别在哪里出现。</div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="progress" aria-hidden="true"><div class="bar" id="bar"></div></div>
+    </footer>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const current = document.getElementById("current");
+    const total = document.getElementById("total");
+    const bar = document.getElementById("bar");
+    const prev = document.getElementById("prev");
+    const next = document.getElementById("next");
+    const notesToggle = document.getElementById("notesToggle");
+    let index = 0;
+    let notesVisible = true;
+
+    total.textContent = String(slides.length);
+
+    function render() {
+      slides.forEach((slide, i) => slide.classList.toggle("active", i === index));
+      current.textContent = String(index + 1);
+      prev.disabled = index === 0;
+      next.disabled = index === slides.length - 1;
+      bar.style.width = `${((index + 1) / slides.length) * 100}%`;
+      document.querySelectorAll(".note").forEach(note => {
+        note.style.display = notesVisible ? "block" : "none";
+      });
+    }
+
+    function go(delta) {
+      index = Math.max(0, Math.min(slides.length - 1, index + delta));
+      render();
+    }
+
+    prev.addEventListener("click", () => go(-1));
+    next.addEventListener("click", () => go(1));
+    notesToggle.addEventListener("click", () => {
+      notesVisible = !notesVisible;
+      notesToggle.textContent = notesVisible ? "提示" : "显示";
+      render();
+    });
+
+    window.addEventListener("keydown", event => {
+      if (event.key === "ArrowRight" || event.key === " " || event.key === "PageDown") {
+        event.preventDefault();
+        go(1);
+      }
+      if (event.key === "ArrowLeft" || event.key === "PageUp") {
+        event.preventDefault();
+        go(-1);
+      }
+      if (event.key.toLowerCase() === "n") {
+        notesVisible = !notesVisible;
+        notesToggle.textContent = notesVisible ? "提示" : "显示";
+        render();
+      }
+      if (event.key === "Home") {
+        index = 0;
+        render();
+      }
+      if (event.key === "End") {
+        index = slides.length - 1;
+        render();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
