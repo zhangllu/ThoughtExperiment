@@ -73,21 +73,18 @@
 - 行动有没有变化？
 - 现实反馈有没有修正我们的判断？
 
-## 5. 项目目录建议
+## 5. 项目文件导航
 
-```text
-question-lab/
-├── README.md
-├── INIT.md
-├── DESIGN.md
-├── BOUNDARIES.md
-├── CHANGELOG.md
-├── EXPERIMENTS/
-├── CASES/
-├── TEMPLATES/
-├── MEETINGS/
-└── LOGS/
-```
+- [README.md](./README.md) — 项目总览
+- [INIT.md](./INIT.md) — 发起缘由与初始假设
+- [DESIGN.md](./DESIGN.md) — 活动设计逻辑
+- [BOUNDARIES.md](./BOUNDARIES.md) — 边界与伦理
+- [CHANGELOG.md](./CHANGELOG.md) — 项目迭代记录
+- [EXPERIMENTS/](./EXPERIMENTS/) — 思想实验库
+- [CASES/](./CASES/) — 案例与活动记录
+- [TEMPLATES/](./TEMPLATES/) — 模板文档
+- [MEETINGS/](./MEETINGS/) — 活动记录
+- [LOGS/](./LOGS/) — 行动实验日志
 
 ## 6. 一句话说明
 
